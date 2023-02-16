@@ -29,7 +29,7 @@ function App() {
   }
 
   async function handleSubmit() {
-    console.log("Clicked");
+    console.log("Submit");
     const formData = new FormData();
     formData.append("first-name", data.firstName);
     formData.append("last-name", data.firstName);
@@ -39,14 +39,12 @@ function App() {
       formData.append("document", data.document);
     }
     try {
-      const response = await fetch(
-        "https://11af48f4-3eea-4ef3-9124-d5b5dafdbf5c.mock.pstmn.io/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      console.log(response.body);
+      const response = await fetch("https://httpbin.org/post", {
+        method: "POST",
+        body: formData,
+      });
+      const jsonRes = (await response.json()) as unknown;
+      console.log(jsonRes);
     } catch (error) {
       console.error(error);
     }
