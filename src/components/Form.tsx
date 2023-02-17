@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { RootState } from "../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateInput, updateDocument, reset } from "../app/modules/formSlice";
@@ -6,6 +7,7 @@ import "./Form.css";
 function Form() {
   const data = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
+  const formRef = useRef<HTMLFormElement>(null);
 
   function handleUpdateInput(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -24,10 +26,10 @@ function Form() {
 
   function handleReset() {
     dispatch(reset());
+    formRef.current?.reset();
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit() {
     const formData = new FormData();
     formData.append("firstName", data.firstName);
     formData.append("lastName", data.firstName);
@@ -55,12 +57,13 @@ function Form() {
       <h1>Registration Form</h1>
       <form
         encType="multipart/form-data"
-        onReset={handleReset}
         onSubmit={(event) => {
-          void (async (event) => {
-            await handleSubmit(event);
-          })(event);
+          event.preventDefault();
+          void (async () => {
+            await handleSubmit();
+          })();
         }}
+        ref={formRef}
       >
         <div className="inputs-container" id="personal-inputs-container">
           <h2>Personal Information</h2>
@@ -141,7 +144,9 @@ function Form() {
               <button type="submit">Send</button>
             </li>
             <li>
-              <button type="reset">Reset</button>
+              <button type="reset" onClick={handleReset}>
+                Reset
+              </button>
             </li>
           </ul>
         </div>

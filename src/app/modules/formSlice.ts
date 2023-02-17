@@ -41,7 +41,6 @@ export const formSlice = createSlice({
       state.document = action.payload;
     },
     reset: (state) => {
-      console.log("Reset");
       for (const key in initialState) {
         if (Object.prototype.hasOwnProperty.call(initialState, key)) {
           state[key] = initialState[key];
