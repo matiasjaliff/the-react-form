@@ -1,13 +1,29 @@
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { RootState } from "../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateInput, updateDocument, reset } from "../app/modules/formSlice";
+import { generateSecrets, generateRequestBody } from "../lib/crypto";
 import "./Form.css";
 
 function Form() {
+  // Declare and initialize variables
+
+  // Redux
   const data = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
+  // States
+  const [sharedSecret, setSharedSecret] = useState<string>("");
+  const [macKey, setMacKey] = useState<string>("");
+  // References
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Generate and set sharedSecret (for encryption) and macKey (for authentication)
+
+  useEffect(() => {
+    generateSecrets(setSharedSecret, setMacKey);
+  }, []);
+
+  // Form handlers
 
   function handleUpdateInput(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -20,6 +36,7 @@ function Form() {
       updateDocument({
         url: files ? URL.createObjectURL(files[0]) : null,
         name: files ? files[0].name : null,
+        data: null,
       })
     );
   }
@@ -30,22 +47,15 @@ function Form() {
   }
 
   async function handleSubmit() {
-    const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("lastName", data.firstName);
-    formData.append("email", data.email);
-    formData.append("companyName", data.companyName);
-    if (data.document.url && data.document.name) {
-      const file = await (await fetch(data.document.url)).blob();
-      formData.append("document", file, data.document.name);
-    }
     try {
+      const requestHeaders = { "Content-Type": "application/json" };
+      const requestBody = await generateRequestBody(data, sharedSecret, macKey);
       const response = await fetch("https://httpbin.org/post", {
         method: "POST",
-        body: formData,
+        headers: requestHeaders,
+        body: requestBody,
       });
-      const jsonRes = (await response.json()) as unknown;
-      console.log(jsonRes);
+      console.log("Response: ", await response.json());
       handleReset();
     } catch (error) {
       console.error(error);
