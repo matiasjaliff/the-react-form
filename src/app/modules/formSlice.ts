@@ -4,9 +4,10 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 interface Document {
   url: string | null;
   name: string | null;
+  data: string | null;
 }
 
-interface DataState {
+export interface DataState {
   firstName: string;
   lastName: string;
   email: string;
@@ -23,6 +24,7 @@ const initialState: DataState = {
   document: {
     url: null,
     name: null,
+    data: null,
   },
 };
 
