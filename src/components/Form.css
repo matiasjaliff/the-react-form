@@ -9,7 +9,6 @@ ul {
   text-align: end;
 }
 
-.buttons-list li {
-  display: inline;
+.button {
   margin-left: 5px;
 }
