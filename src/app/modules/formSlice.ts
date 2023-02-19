@@ -10,8 +10,10 @@ interface Document {
 export interface DataState {
   firstName: string;
   lastName: string;
+  idNumber: string;
   email: string;
   companyName: string;
+  creationDate: string;
   document: Document;
   [key: string]: string | Document;
 }
@@ -19,8 +21,10 @@ export interface DataState {
 const initialState: DataState = {
   firstName: "",
   lastName: "",
+  idNumber: "",
   email: "",
   companyName: "",
+  creationDate: "",
   document: {
     url: null,
     name: null,
